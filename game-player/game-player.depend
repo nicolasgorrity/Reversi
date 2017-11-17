@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1510927977 source:/home/marylou/Documents/ING4/Reversi/game-player/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1510927977 source:/home/marylou/Documents/ING4/Reversi/game-player/play.c
+	"play.h"
+
+1510927977 /home/marylou/Documents/ING4/Reversi/game-player/play.h
+
