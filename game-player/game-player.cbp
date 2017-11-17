@@ -35,6 +35,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="connection.h" />
+		<Unit filename="datastruct.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

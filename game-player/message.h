@@ -1,8 +1,12 @@
 #ifndef MESSAGE_H_INCLUDED
 #define MESSAGE_H_INCLUDED
 
-typedef enum {OK, NOK, CONNECT, NEXT_TURN, NEW_MOVE} Message;
+#include <stdlib.h>
+#include <stdio.h>
 
-char *createMessage(Message message);
+#include "datastruct.h"
+
+char *createMessage(MessageType message, MessageDataSend *data);
+MessageType extractMessage(char *message, MessageDataRead *data);
 
 #endif // MESSAGE_H_INCLUDED
