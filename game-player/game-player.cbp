@@ -38,6 +38,10 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="message.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="message.h" />
 		<Unit filename="play.c">
 			<Option compilerVar="CC" />
 		</Unit>
