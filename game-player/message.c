@@ -65,6 +65,10 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
 
 MessageType extractMessage(char *message, MessageDataRead *data) {
     MessageType messageType;
+    if (data != NULL) {
+        perror("game-player : message.c : extractMessage() :\nError: Parameter data (of type MessageDataRead*) must be initialized to NULL.\n");
+        return (MessageType)-1;
+    }
 
     //Check synchronization value
     if (message[0] != synchroValue) return (MessageType)-1;
@@ -94,6 +98,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     switch(type) {
     case 0x10:
         messageType = INIT_OK;
+        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         if (content[0] == 0x01) data->color = BLACK;
         else if (content[0] == 0x02) data->color = WHITE;
         else perror("game-player : message.c : extractMessage() : \nError: Received unknown player color\n");
@@ -107,6 +112,53 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
 
     case 0x05:
         messageType = NEXT_TURN;
-        //Create or update data?
+        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
+        //Received a board : allocate the data structure
+        data->board = (Board*)malloc(sizeof(Board));
+        data->board->lastMove = (Coords*)malloc(sizeof(Coords));
+        data->board->dimensions = (Coords*)malloc(sizeof(Coords));
+        //Fill the attributes which concern the board parameters
+        data->board->lastMove->x = content[0];
+        data->board->lastMove->y = content[1];
+        data->board->dimensions->x = content[2];
+        data->board->dimensions->y = content[3];
+        //Allocate the board state according to the board dimensions
+        data->board->state = (char**)malloc(data->board->dimensions->y*sizeof(char*));
+        for (i=0; i<data->board->dimensions->y; i++) {
+            data->board->state[i] = (char*)malloc(data->board->dimensions->x*sizeof(char));
+        }
+        //Fill the board state
+        char *messageBoardState = content + 4;
+        int dataChar, board_i=0, board_j=0;
+        char exit=0;
+        for (dataChar=0; dataChar<length; dataChar++) {
+            char factor = 0b11000000;
+            int r, byteDivider = 6; //6: 2 most significants bits // 4: 2 bits after //2: 2 bits after  // 0: 2 least significant bits
+            for (r=0; r<4; r++) { //4 cells are encoded on one byte
+                //Only retrieve the 2 interesting bits: isolate them with factor ; translate them as LSBs with byteDivider
+                data->board->state[board_i][board_j] = (messageBoardState[dataChar]&factor)>>byteDivider;
+                //Prepare the next cell to be filled
+                board_j++;
+                //If we got to the extremity of the row, go back to the beginning of next row
+                if (board_j == data->board->dimensions->x) {
+                    board_j = 0;
+                    board_i++;
+                }
+                //If we got to the end of the board, exit this loop
+                if (board_i == data->board->dimensions->y) {
+                    exit = 1;
+                    break;
+                }
+                //Update the bits manipulators
+                factor >> 2; //We want the next two bits of the bytes
+                byteDivider -= 2; //They are two bits closer to the LSBs
+            }
+            if (exit) break;
+        }
+        //Check the dimensions
+        if (board_i != data->board->dimensions->y || board_j != 0 || dataChar == length) { //The loop should always be interrupted by the exit variable
+            perror("game-player : message.c : extractMessage() : \nError: Board state does not match with specified dimensions, or was not entirely retrieved\n");
+        }
+        break;
     }
 }
