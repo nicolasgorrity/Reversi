@@ -168,7 +168,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
                     break;
                 }
                 //Update the bits manipulators
-                factor >> 2; //We want the next two bits of the bytes
+                factor = factor >> 2; //We want the next two bits of the bytes
                 byteDivider -= 2; //They are two bits closer to the LSBs
             }
             if (exit) break;
@@ -179,4 +179,5 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         }
         break;
     }
+    return messageType;
 }

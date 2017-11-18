@@ -14,11 +14,11 @@ typedef struct Coordinates {
 } Coords;
 
 //Board data structure
-struct Board {
+typedef struct BoardStructure {
     Coords *lastMove;
     Coords *dimensions;
-    unsigned char **state;
-}
+    char **state;
+} Board;
 
 //Data to send to a message -> structure can be different according to the message,
 //so we use a union
