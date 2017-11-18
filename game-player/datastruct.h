@@ -23,12 +23,12 @@ struct Board {
 //Data to send to a message -> structure can be different according to the message,
 //so we use a union
 typedef union DataToSend {
-    Coords *coords; //For NEW_MOVE
-    char *name;     //For CONNECT
+    Coords *newMoveCoords; //For NEW_MOVE
+    char *playerName;      //For CONNECT
 } MessageDataSend;
 
 typedef union DataToRead {
-    Color color;    //For Player OK
+    PlayerColor playerColor;    //For Player OK
     Board *board;   //For NEXT_TURN
 } MessageDataRead;
 

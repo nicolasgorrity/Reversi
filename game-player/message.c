@@ -11,6 +11,24 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
     char checksum = 0;
 
     switch (messageType) {
+    case CONNECT:
+        if (data == NULL || data->playerName == NULL) {
+            perror("game-player : message.c : createMessage() :\nError: Received NULL DataToSend structure for a CONNECT message\n");
+            return NULL;
+        }
+        int nameSize = strlen(data->playerName);
+        length = nameSize + 1;
+        type = 0x01;
+        //Allocate char array to store the message content
+        content = (char*)malloc(length*sizeof(char));
+        //Fill the data
+        content[0] = (char)nameSize;
+        int i;
+        for (i=0; i<nameSize; i++) {
+            content[i+1] = data->playerName[i];
+        }
+        break;
+
     case NOK:
         length = 1;
         type = 0x02;
@@ -21,7 +39,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         break;
 
     case NEW_MOVE:
-        if (data == NULL || data->coords == NULL) {
+        if (data == NULL || data->newMoveCoords == NULL) {
             perror("game-player : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEW_MOVE message\n");
             return NULL;
         }
@@ -30,8 +48,8 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         //Allocate char array to store the message content
         content = (char*)malloc(length*sizeof(char));
         //Fill the data
-        content[0] = data->coords->x; //x new position
-        content[1] = data->coords->y; //y new position
+        content[0] = data->newMoveCoords->x; //x new position
+        content[1] = data->newMoveCoords->y; //y new position
         break;
 
     default:
@@ -99,8 +117,8 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     case 0x10:
         messageType = INIT_OK;
         data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
-        if (content[0] == 0x01) data->color = BLACK;
-        else if (content[0] == 0x02) data->color = WHITE;
+        if (content[0] == 0x01) data->playerColor = BLACK;
+        else if (content[0] == 0x02) data->playerColor = WHITE;
         else perror("game-player : message.c : extractMessage() : \nError: Received unknown player color\n");
         break;
 
