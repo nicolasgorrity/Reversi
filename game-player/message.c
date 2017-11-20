@@ -141,9 +141,9 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         data->board->dimensions->x = content[2];
         data->board->dimensions->y = content[3];
         //Allocate the board state according to the board dimensions
-        data->board->state = (char**)malloc(data->board->dimensions->y*sizeof(char*));
+        data->board->state = (Color**)malloc(data->board->dimensions->y*sizeof(Color*));
         for (i=0; i<data->board->dimensions->y; i++) {
-            data->board->state[i] = (char*)malloc(data->board->dimensions->x*sizeof(char));
+            data->board->state[i] = (Color*)malloc(data->board->dimensions->x*sizeof(Color));
         }
         //Fill the board state
         char *messageBoardState = content + 4;
@@ -154,7 +154,8 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
             int r, byteDivider = 6; //6: 2 most significants bits // 4: 2 bits after //2: 2 bits after  // 0: 2 least significant bits
             for (r=0; r<4; r++) { //4 cells are encoded on one byte
                 //Only retrieve the 2 interesting bits: isolate them with factor ; translate them as LSBs with byteDivider
-                data->board->state[board_i][board_j] = (messageBoardState[dataChar]&factor)>>byteDivider;
+                char cellState = (messageBoardState[dataChar]&factor)>>byteDivider;
+                data->board->state[board_i][board_j] = charToCellColor(cellState);
                 //Prepare the next cell to be filled
                 board_j++;
                 //If we got to the extremity of the row, go back to the beginning of next row
@@ -180,4 +181,23 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         break;
     }
     return messageType;
+}
+
+Color charToCellColor(char cellState) {
+    Color color;
+    switch (cellState) {
+        case 0b00000000:
+            color = EMPTY;
+            break;
+        case 0b00000001:
+            color = BLACK;
+            break;
+        case 0b00000010:
+            color = WHITE;
+            break;
+        default:
+            perror("game-player : message.c : charToCell() : \nError: Received incompatible cell value\n");
+            color = (Color)-1;
+    }
+    return color;
 }
