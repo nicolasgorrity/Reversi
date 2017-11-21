@@ -73,7 +73,7 @@ PlayableCell* findPlayableCells(Board *board, Color playerColor) {
                                         PlayableCell *playableCell = playableCells;
                                         if (playableCell != NULL) {
                                             while (playableCell->next != NULL) playableCell = playableCell->next;
-                                            if (playableCell->nbOfArrays == 0) {
+                                            if (playableCell->cellCoords->x != j || playableCell->cellCoords->y != i) {
                                                 playableCell->next = (PlayableCell*)malloc(sizeof(PlayableCell));
                                                 playableCell = playableCell->next;
                                                 playableCell->nbOfArrays = 0;

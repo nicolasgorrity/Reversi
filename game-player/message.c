@@ -104,15 +104,14 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     char checkSum = type;
     int i;
     for (i=0; i<length; i++) {
-        checkSum += content[i+3];
+        checkSum += content[i];
     }
     checkSum = checkSum & 0xff;
     //Compare it to the received one to verify that the message is not corrupted
-    if (checkSum != message[length+3]) {
+    if (checkSum != content[length]) {
         perror("game-player : message.c : extractMessage() :\nError: Checksum not verified. The receive message may be corrupted.\n");
         return (MessageType)-1;
     }
-
     switch(type) {
     case 0x10:
         messageType = INIT_OK;
