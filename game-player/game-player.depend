@@ -3,10 +3,13 @@
 	<stdio.h>
 	<stdlib.h>
 
-1510927977 source:/home/marylou/Documents/ING4/Reversi/game-player/play.c
+1511288855 source:/home/marylou/Documents/ING4/Reversi/game-player/play.c
 	"play.h"
 
-1510927977 /home/marylou/Documents/ING4/Reversi/game-player/play.h
+1511288855 /home/marylou/Documents/ING4/Reversi/game-player/play.h
+	<stdio.h>
+	<stdlib.h>
+	"datastruct.h"
 
 1511032328 source:/home/nicolas/Documents/Reversi/game-player/connection.c
 	"connection.h"
@@ -31,4 +34,26 @@
 	"datastruct.h"
 
 1511091112 /home/nicolas/Documents/Reversi/game-player/datastruct.h
+
+1510953331 source:/home/marylou/Documents/ING4/Reversi/game-player/connection.c
+	"connection.h"
+
+1511289197 /home/marylou/Documents/ING4/Reversi/game-player/connection.h
+	<stdio.h>
+	<string.h>
+	<sys/socket.h>
+	<unistd.h>
+	<arpa/inet.h>
+	<stdlib.h>
+
+1511288855 source:/home/marylou/Documents/ING4/Reversi/game-player/message.c
+	"message.h"
+
+1511288855 /home/marylou/Documents/ING4/Reversi/game-player/message.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"datastruct.h"
+
+1511288855 /home/marylou/Documents/ING4/Reversi/game-player/datastruct.h
 

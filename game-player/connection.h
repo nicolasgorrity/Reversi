@@ -4,7 +4,10 @@
 #include<stdio.h> //printf
 #include<string.h> //strlen
 #include<sys/socket.h> //socket
+#include<unistd.h>//socket read write
 #include<arpa/inet.h> //inet_addr
+#include<stdlib.h>//malloc
+
 
 /*
  *

@@ -46,13 +46,13 @@ char* readMessage(int socket)
     {
         shortMessage[i]=message[i];
     }
-    return message;
+    return shortMessage;
 }
 
 
 int writeMessage(int socket, char *message)
 {
-    if (write(socket, message, strlen(message), 0) < 0)
+    if (write(socket, message, strlen(message)) < 0)
     {
         puts("game-player : connection.c in function writeMessage() : write failed");
         return -1;
@@ -63,5 +63,5 @@ int writeMessage(int socket, char *message)
 
 int disconnect(int socket)
 {
-    close(socket);
+    return close(socket);
 }
