@@ -17,7 +17,7 @@ int createSocket();
 /*
  *
  */
-int connectSocket(int socket);
+int connectSocket(int socket, unsigned int port);
 
 /*
  *

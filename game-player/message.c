@@ -127,6 +127,10 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         else perror("game-player : message.c : extractMessage() : \nError: Received bad OK/NOK message\n");
         break;
 
+    case 0x04:
+        messageType = END;
+        break;
+
     case 0x05:
         messageType = NEXT_TURN;
         data = (MessageDataRead*)malloc(sizeof(MessageDataRead));

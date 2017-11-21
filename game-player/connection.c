@@ -11,13 +11,13 @@ int createSocket()
     return sock;
 }
 
-int connectSocket(int socket)
+int connectSocket(int socket, unsigned int port)
 {
     struct sockaddr_in server;
     //Define the socket remote address : 127.0.0.1:8888
     server.sin_addr.s_addr = inet_addr("127.0.0.1");
     server.sin_family = AF_INET;
-    server.sin_port = htons(8888);
+    server.sin_port = htons(port);
 
     //Connect to remote server
     if (connect(socket, (struct sockaddr*)&server, sizeof(server)) < 0)
@@ -54,7 +54,7 @@ int writeMessage(int socket, char *message)
 {
     if (write(socket, message, strlen(message)) < 0)
     {
-        puts("game-player : connection.c in function writeMessage() : write failed");
+        printf("game-player : connection.c in function writeMessage() : write failed. Message was: %s", message);
         return -1;
     }
     return 0;
