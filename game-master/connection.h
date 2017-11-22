@@ -17,7 +17,17 @@ int createSocket();
 /*
  *
  */
-int connectSocket(int socket, unsigned int port);
+int bindSocket(int socket, unsigned int port);
+
+/*
+ *
+ */
+int listenSocket(int socket);
+
+/*
+ *
+ */
+int acceptSocket(int socket);
 
 /*
  *

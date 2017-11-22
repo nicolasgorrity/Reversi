@@ -11,7 +11,7 @@ int createSocket()
     return sock;
 }
 
-int connectSocket(int socket, unsigned int port)
+int bindSocket(int socket, unsigned int port)
 {
     struct sockaddr_in server;
     //Define the socket remote address : 127.0.0.1:8888
@@ -20,12 +20,34 @@ int connectSocket(int socket, unsigned int port)
     server.sin_port = htons(port);
 
     //Connect to remote server
-    if (connect(socket, (struct sockaddr*)&server, sizeof(server)) < 0)
+    if (bind(socket, (struct sockaddr*)&server, sizeof(server)) < 0)
     {
-        perror("game-master : connection.c in function connectSocket() : Connect failed. Error \n");
+        perror("game-master : connection.c in function bindSocket() : Bind failed. Error \n");
         return -1;
     }
-    puts("Connected \n");
+    puts("Bind \n");
+    return 0;
+}
+
+int listenSocket(int socket)
+{
+    listen(socket, 3);
+    puts("Waiting for incoming connections...");
+    return 0;
+}
+
+int acceptSocket(int socket)
+{
+    int client_sock;
+    struct sockaddr_in client;
+    int c = sizeof(struct sockaddr_in);
+    client_sock = accept(socket, (struct sockaddr*)&client, (socklen_t*)&c);
+    if (client_sock < 0)
+    {
+        perror("game-master : connection.c in function acceptSocket() : accept failed");
+        return -1;
+    }
+    puts("Connection accepted");
     return 0;
 }
 
