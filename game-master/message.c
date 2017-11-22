@@ -54,10 +54,10 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         //Allocate char array to store the message content
         content = (char*)malloc(length*sizeof(char));
         //Fill the data
-        content[0] = data->board->lastMove->x;
-        content[1] = data->board->lastMove->y;
-        content[2] = data->board->dimensions->x;
-        content[3] = data->board->dimensions->y;
+        content[0] = (char)data->board->lastMove->x;
+        content[1] = (char)data->board->lastMove->y;
+        content[2] = (char)data->board->dimensions->x;
+        content[3] = (char)data->board->dimensions->y;
         char *boardState = content + 4;
         int i, j, board_i=0, board_j=0;
         for (i=0; i<nbBytes; i++) {
@@ -159,7 +159,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     case 0x01:
         messageType = CONNECT;
         data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
-        int playerNameLen = content[0];
+        int playerNameLen = (int)content[0];
         char *playerName = (char*)malloc((playerNameLen+1)*sizeof(char));
         int n;
         for (n=0; n<playerNameLen; n++) {
@@ -173,8 +173,8 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         messageType = NEW_MOVE;
         data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         data->newMoveCoords = (Coords*)malloc(sizeof(Coords));
-        data->newMoveCoords->x = content[0];
-        data->newMoveCoords->y = content[1];
+        data->newMoveCoords->x = (unsigned short)content[0];
+        data->newMoveCoords->y = (unsigned short)content[1];
         break;
 
     default:
