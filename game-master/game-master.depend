@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1511355538 source:/home/marylou/Documents/ING4/Reversi/game-master/main.c
+	<stdio.h>
+	<stdlib.h>
+
