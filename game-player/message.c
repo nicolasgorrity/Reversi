@@ -29,15 +29,6 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         }
         break;
 
-    case NOK:
-        length = 1;
-        type = 0x02;
-        //Allocate char array to store the message content
-        content = (char*)malloc(length*sizeof(char));
-        //Fill the data
-        content[0] = 0x00; //not ok code
-        break;
-
     case NEW_MOVE:
         if (data == NULL || data->newMoveCoords == NULL) {
             perror("game-player : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEW_MOVE message\n");

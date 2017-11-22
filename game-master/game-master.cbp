@@ -35,9 +35,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="connection.h" />
+		<Unit filename="datastruct.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="message.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="message.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

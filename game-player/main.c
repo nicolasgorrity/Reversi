@@ -41,16 +41,12 @@ int main(int argc, char *argv[])
             Coords *bestMove = findBestMove(board, playerColor);
             freeBoard(board);
 
-            ///Send NEW_MOVE or NOK message
+            ///Send NEW_MOVE message
             char *messageToSend;
-            if (bestMove == NULL) {
-                messageToSend = createMessage(NOK, NULL);
-            }
-            else {
-                dataSend->newMoveCoords = bestMove;
-                messageToSend = createMessage(NEW_MOVE, dataSend);
-                free(dataSend->newMoveCoords);
-            }
+            dataSend->newMoveCoords = bestMove;
+            messageToSend = createMessage(NEW_MOVE, dataSend);
+            free(dataSend->newMoveCoords);
+
             if (writeMessage(socket, messageToSend) < 0) {
                 perror("game-player : main.c : Could not send the new move message\n");
                 return disconnect(socket);

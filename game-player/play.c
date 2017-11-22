@@ -6,7 +6,15 @@ Coords* findBestMove(Board *board, Color playerColor) {
 
     ///Chose the best move
     //For now, we simply send the first one
-    Coords* bestMove = playableCells->cellCoords;
+    Coords* bestMove;
+    if (playableCells != NULL) {
+        bestMove = playableCells->cellCoords;
+    }
+    else {
+        bestMove = (Coords*)malloc(sizeof(Coords));
+        bestMove->x = USHRT_MAX;
+        bestMove->y = USHRT_MAX;
+    }
 
     ///Copy its data into a Coords* data structure
     Coords* bestMoveCopy = (Coords*)malloc(sizeof(Coords));
