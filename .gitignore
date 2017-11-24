@@ -4,3 +4,6 @@
 /game-master/bin/
 /game-master/obj/
 /game-master/game-master.layout
+/game-controller/bin/
+/game-controller/obj/
+/game-controller/game-controller.layout

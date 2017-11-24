@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1511546947 source:/home/nicolas/Documents/Reversi/game-controller/main.c
+	<stdio.h>
+	<stdlib.h>
+
