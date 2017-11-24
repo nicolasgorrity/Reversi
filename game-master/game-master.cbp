@@ -43,6 +43,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="message.h" />
+		<Unit filename="play.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="play.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
