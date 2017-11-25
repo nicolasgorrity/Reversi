@@ -8,6 +8,7 @@
 void displayAllData(Board *board, PlayersData *playersData);
 void displayBoard(Board *board);
 void displayPlayersData(PlayersData *playersData);
+void displayCommands();
 
 char colorToSymbol(Color color);
 

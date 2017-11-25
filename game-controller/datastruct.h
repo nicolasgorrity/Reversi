@@ -26,6 +26,7 @@ void freeBoard(Board *board);
 //Player data structure
 typedef struct PlayerDataStructure {
     unsigned int points;
+    unsigned int timer;
     unsigned int timerMSB;
     unsigned int timerLSB;
     char *playerName;

@@ -1,5 +1,22 @@
 # depslib dependency file v1.0
-1511546947 source:/home/nicolas/Documents/Reversi/game-controller/main.c
+1511614184 source:/home/nicolas/Documents/Reversi/game-controller/main.c
+	"display.h"
+
+1511609164 source:/home/nicolas/Documents/Reversi/game-controller/message.c
+	"message.h"
+
+1511596936 /home/nicolas/Documents/Reversi/game-controller/message.h
 	<stdio.h>
 	<stdlib.h>
+	"datastruct.h"
+
+1511614878 /home/nicolas/Documents/Reversi/game-controller/datastruct.h
+	<stdlib.h>
+
+1511615209 source:/home/nicolas/Documents/Reversi/game-controller/display.c
+	"display.h"
+
+1511615172 /home/nicolas/Documents/Reversi/game-controller/display.h
+	<stdio.h>
+	"datastruct.h"
 

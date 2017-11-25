@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-
+#include "display.h"
 int main()
 {
-    printf("Hello world!\n");
+    displayAllData(NULL,NULL);
     return 0;
 }
