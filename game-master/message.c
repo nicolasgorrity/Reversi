@@ -94,6 +94,11 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         content = NULL;
         break;
 
+    case PING:
+        length = 0;
+        type = 0x11;
+        content = NULL;
+
     default:
         return NULL;
     }
@@ -118,7 +123,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
     messageString[length+3] = checksum;
 
     //Free the remote 'content' string
-    free(content);
+    if (length > 0) free(content);
 
     return messageString;
 }

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 //Identify message types
-typedef enum {OK, NOK, INIT_OK, CONNECT, NEXT_TURN, NEW_MOVE, END} MessageType;
+typedef enum {OK, NOK, INIT_OK, CONNECT, NEXT_TURN, NEW_MOVE, END, PING} MessageType;
 
 //Identify player and cells color
 typedef enum {WHITE, BLACK, EMPTY} Color;

@@ -2,7 +2,7 @@
 #define DATASTRUCT_H_INCLUDED
 
 //Identify message types
-typedef enum {OK, NOK, INIT_OK, CONNECT, NEXT_TURN, NEW_MOVE, END} MessageType;
+typedef enum {OK, NOK, INIT_OK, CONNECT, NEXT_TURN, NEW_MOVE, END, PING, STATUS1, STATUS2, CONTROL} MessageType;
 
 //Identify player and cells color
 typedef enum {WHITE, BLACK, EMPTY} Color;

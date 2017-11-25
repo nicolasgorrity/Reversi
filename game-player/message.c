@@ -67,7 +67,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
     messageString[length+3] = checksum;
 
     //Free the remote 'content' string
-    free(content);
+    if (length > 0) free(content);
 
     return messageString;
 }
@@ -173,6 +173,13 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
             perror("game-player : message.c : extractMessage() : \nError: Board state does not match with specified dimensions, or was not entirely retrieved\n");
         }
         break;
+
+    case 0x11:
+        messageType = PING;
+        break;
+
+    default:
+        messageType = (MessageType)-1;
     }
     return messageType;
 }
