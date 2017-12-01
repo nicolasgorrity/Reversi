@@ -22,6 +22,7 @@ typedef struct BoardStructure {
     Color **state;
 } Board;
 void freeBoard(Board *board);
+Board* allocateInitialBoard(unsigned short sizeX, unsigned short sizeY);
 
 //Player data structure
 typedef struct PlayerDataStructure {

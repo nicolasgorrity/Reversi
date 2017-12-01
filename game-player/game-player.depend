@@ -11,29 +11,33 @@
 	<stdlib.h>
 	"datastruct.h"
 
-1511032328 source:/home/nicolas/Documents/Reversi/game-player/connection.c
+1511302983 source:/home/nicolas/Documents/Reversi/game-player/connection.c
 	"connection.h"
 
-1511032335 /home/nicolas/Documents/Reversi/game-player/connection.h
+1511298864 /home/nicolas/Documents/Reversi/game-player/connection.h
 	<stdio.h>
 	<string.h>
 	<sys/socket.h>
+	<unistd.h>
 	<arpa/inet.h>
-
-1510927102 source:/home/nicolas/Documents/Reversi/game-player/main.c
-	<stdio.h>
 	<stdlib.h>
 
-1511091171 source:/home/nicolas/Documents/Reversi/game-player/message.c
+1511365647 source:/home/nicolas/Documents/Reversi/game-player/main.c
+	"connection.h"
+	"message.h"
+	"play.h"
+
+1511598818 source:/home/nicolas/Documents/Reversi/game-player/message.c
 	"message.h"
 
-1511091207 /home/nicolas/Documents/Reversi/game-player/message.h
+1511365918 /home/nicolas/Documents/Reversi/game-player/message.h
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
 	"datastruct.h"
 
-1511091112 /home/nicolas/Documents/Reversi/game-player/datastruct.h
+1511598405 /home/nicolas/Documents/Reversi/game-player/datastruct.h
+	<stdlib.h>
 
 1510953331 source:/home/marylou/Documents/ING4/Reversi/game-player/connection.c
 	"connection.h"
@@ -56,4 +60,16 @@
 	"datastruct.h"
 
 1511288855 /home/marylou/Documents/ING4/Reversi/game-player/datastruct.h
+
+1511302955 source:/home/nicolas/Documents/Reversi/game-player/datastruct.c
+	"datastruct.h"
+
+1511366046 /home/nicolas/Documents/Reversi/game-player/play.h
+	<stdio.h>
+	<stdlib.h>
+	<limits.h>
+	"datastruct.h"
+
+1511365958 source:/home/nicolas/Documents/Reversi/game-player/play.c
+	"play.h"
 
