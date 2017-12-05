@@ -42,7 +42,7 @@ int writeMessage(int socket, char *message);
 /*
  *
  */
-int disconnect(int socket);
+int disconnect(int socket, int sock1, int sock2, int sock3);
 
 
 #endif // CONNECTION_H_INCLUDED

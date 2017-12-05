@@ -1,6 +1,8 @@
 #ifndef DATASTRUCT_H_INCLUDED
 #define DATASTRUCT_H_INCLUDED
 
+#include <stdlib.h>
+
 //Identify message types
 typedef enum {OK, NOK, INIT_OK, CONNECT, NEXT_TURN, NEW_MOVE, END, PING, STATUS1, STATUS2, CONTROL} MessageType;
 
@@ -19,7 +21,10 @@ typedef struct BoardStructure {
     Coords *dimensions;
     Color **state;
 } Board;
+
 void freeBoard(Board *board);
+
+Board* allocateInitialBoard(unsigned short sizeX, unsigned short sizeY);
 
 //Data to send to a message -> structure can be different according to the message, so we use a union
 typedef union DataToSend {

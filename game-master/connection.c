@@ -31,8 +31,8 @@ int bindSocket(int socket, unsigned int port)
 
 int listenSocket(int socket)
 {
-    listen(socket, 3);
     puts("Waiting for incoming connections...");
+    listen(socket, 3);
     return 0;
 }
 
@@ -47,8 +47,8 @@ int acceptSocket(int socket)
         perror("game-master : connection.c in function acceptSocket() : accept failed");
         return -1;
     }
-    puts("Connection accepted");
-    return 0;
+    printf("Connection accepted on port %d", client.sin_port);
+    return client_sock;
 }
 
 char* readMessage(int socket)
@@ -83,8 +83,22 @@ int writeMessage(int socket, char *message)
 }
 
 
-int disconnect(int socket)
+int disconnect(int socket, int sock1, int sock2, int sock3)
 {
     printf("game-master : End of the Game. Disconnecting...\n");
-    return close(socket);
+    int res = close(socket);
+    if (res < 0) perror("game-master : connection.c : could not disconnect server socket\n");
+    if (sock1 >= 0) {
+        res = close(sock1);
+        if (res < 0) perror("game-master : connection.c : could not disconnect client socket 1\n");
+    }
+    if (sock2 >= 0) {
+        res = close(sock2);
+        if (res < 0) perror("game-master : connection.c : could not disconnect client socket 2\n");
+    }
+    if (sock3 >= 0) {
+        res = close(sock3);
+        if (res < 0) perror("game-master : connection.c : could not disconnect client socket 3\n");
+    }
+    return 0;
 }
