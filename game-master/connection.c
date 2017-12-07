@@ -7,7 +7,7 @@ int createSocket()
     {
         printf("game-master : connection.c in function createSocket() : Could not create socket \n");
     }
-    puts("Socket created \n");
+    puts("Socket created\n");
     return sock;
 }
 
@@ -25,7 +25,7 @@ int bindSocket(int socket, unsigned int port)
         perror("game-master : connection.c in function bindSocket() : Bind failed. Error \n");
         return -1;
     }
-    puts("Bind \n");
+    printf("Bind port %d\n", port);
     return 0;
 }
 
@@ -83,11 +83,15 @@ int writeMessage(int socket, char *message)
 }
 
 
-int disconnect(int socket, int sock1, int sock2, int sock3)
+int disconnect(int socket1, int socket2, int socketC, int sock1, int sock2, int sock3)
 {
     printf("game-master : End of the Game. Disconnecting...\n");
-    int res = close(socket);
-    if (res < 0) perror("game-master : connection.c : could not disconnect server socket\n");
+    int res = close(socket1);
+    if (res < 0) perror("game-master : connection.c : could not disconnect server socket1\n");
+    res = close(socket2);
+    if (res < 0) perror("game-master : connection.c : could not disconnect server socket2\n");
+    res = close(socketC);
+    if (res < 0) perror("game-master : connection.c : could not disconnect server socketC\n");
     if (sock1 >= 0) {
         res = close(sock1);
         if (res < 0) perror("game-master : connection.c : could not disconnect client socket 1\n");

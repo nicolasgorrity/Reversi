@@ -74,10 +74,6 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
 
 MessageType extractMessage(char *message, MessageDataRead *data) {
     MessageType messageType;
-    if (data != NULL) {
-        perror("game-player : message.c : extractMessage() :\nError: Parameter data (of type MessageDataRead*) must be initialized to NULL.\n");
-        return (MessageType)-1;
-    }
 
     //Check synchronization value
     if (message[0] != synchroValue) return (MessageType)-1;
@@ -106,7 +102,6 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     switch(type) {
     case 0x10:
         messageType = INIT_OK;
-        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         if (content[0] == 0x01) data->playerColor = BLACK;
         else if (content[0] == 0x02) data->playerColor = WHITE;
         else perror("game-player : message.c : extractMessage() : \nError: Received unknown player color\n");
@@ -124,7 +119,6 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
 
     case 0x05:
         messageType = NEXT_TURN;
-        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         //Received a board : allocate the data structure
         data->board = (Board*)malloc(sizeof(Board));
         data->board->lastMove = (Coords*)malloc(sizeof(Coords));

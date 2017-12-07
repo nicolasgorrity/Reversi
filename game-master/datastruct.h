@@ -38,4 +38,18 @@ typedef union DataToRead {
     char *playerName;      //For CONNECT
 } MessageDataRead;
 
+//Player data structure
+typedef struct PlayerDataStructure {
+    unsigned int points;
+    unsigned int timer;
+    unsigned int timerMSB;
+    unsigned int timerLSB;
+    char *playerName;
+} PlayerData;
+
+typedef struct PlayersDataStructure {
+    PlayerData *dataWP;
+    PlayerData *dataBP;
+} PlayersData;
+
 #endif // DATASTRUCT_H_INCLUDED

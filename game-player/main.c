@@ -4,7 +4,8 @@
 
 int main(int argc, char *argv[])
 {
-    unsigned int port = 8888;
+    unsigned int port = 8889;
+    printf("Port number: %d\n", port);
     char *name = "Jean-Mi";
 
     ///Open port as Client

@@ -44,7 +44,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
 
     case NEXT_TURN:
         if (data == NULL || data->board == NULL) {
-            perror("game-master : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEW_TURN message\n");
+            perror("game-master : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEXT_TURN message\n");
             return NULL;
         }
         int nbCells = data->board->dimensions->x * data->board->dimensions->y;
@@ -86,6 +86,14 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
             }
             boardState[i] = byte;
         }
+        break;
+
+    case STATUS1:
+
+        break;
+
+    case STATUS2:
+
         break;
 
     case END:
@@ -130,10 +138,6 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
 
 MessageType extractMessage(char *message, MessageDataRead *data) {
     MessageType messageType;
-    if (data != NULL) {
-        perror("game-player : message.c : extractMessage() :\nError: Parameter data (of type MessageDataRead*) must be initialized to NULL.\n");
-        return (MessageType)-1;
-    }
 
     //Check synchronization value
     if (message[0] != synchroValue) return (MessageType)-1;
@@ -163,7 +167,6 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     switch(type) {
     case 0x01:
         messageType = CONNECT;
-        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         int playerNameLen = (int)content[0];
         char *playerName = (char*)malloc((playerNameLen+1)*sizeof(char));
         int n;
@@ -176,7 +179,6 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
 
     case 0x03:
         messageType = NEW_MOVE;
-        data = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         data->newMoveCoords = (Coords*)malloc(sizeof(Coords));
         data->newMoveCoords->x = (unsigned short)content[0];
         data->newMoveCoords->y = (unsigned short)content[1];
