@@ -40,9 +40,9 @@ char* readMessage(int socket)
 
     int msgLength = message[1];
     char *shortMessage;
-    shortMessage = (char*) malloc((msgLength+4)*sizeof(char));
+    shortMessage = (char*) malloc((msgLength+5)*sizeof(char));
     int i;
-    for(i=0; i<(msgLength+4); i++)
+    for(i=0; i<(msgLength+5); i++)
     {
         shortMessage[i]=message[i];
     }

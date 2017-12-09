@@ -2,9 +2,9 @@
 
 #define synchroValue 0x55
 
-char *createMessage(MessageType messageType, MessageDataSend *data) {
+String *createMessage(MessageType messageType, MessageDataSend *data) {
     char *messageString = NULL;
-    int length = 0;
+    unsigned short length = 0;
 
     char type;
     char *content;
@@ -54,10 +54,10 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         //Allocate char array to store the message content
         content = (char*)malloc(length*sizeof(char));
         //Fill the data
-        content[0] = (char)data->board->lastMove->x;
-        content[1] = (char)data->board->lastMove->y;
-        content[2] = (char)data->board->dimensions->x;
-        content[3] = (char)data->board->dimensions->y;
+        content[0] = data->board->lastMove->x;
+        content[1] = data->board->lastMove->y;
+        content[2] = data->board->dimensions->x;
+        content[3] = data->board->dimensions->y;
         char *boardState = content + 4;
         int i, j, board_i=0, board_j=0;
         for (i=0; i<nbBytes; i++) {
@@ -114,26 +114,28 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
     //Calculate the checksum
     int i;
     for (i=0; i<length; i++) {
-        checksum += content[i];
+        checksum += (unsigned char)content[i];
     }
     checksum = (type+checksum) & 0xff;
 
     //Allocate final message string
-    messageString = (char*)malloc((length+4)*sizeof(char));
+    messageString = (char*)malloc((length+5)*sizeof(char));
 
     //Fill the final message string
     messageString[0] = synchroValue;
-    messageString[1] = (char)length;
+    messageString[1] = length;
     messageString[2] = type;
     for (i=0; i<length; i++) {
         messageString[i+3] = content[i];
     }
     messageString[length+3] = checksum;
+    messageString[length+4] = '\0';
 
     //Free the remote 'content' string
     if (length > 0) free(content);
 
-    return messageString;
+    String *string = newString(messageString, length+4);
+    return string;
 }
 
 MessageType extractMessage(char *message, MessageDataRead *data) {
@@ -143,7 +145,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     if (message[0] != synchroValue) return (MessageType)-1;
 
     //Get length of the message
-    int length = (int)message[1];
+    int length = message[1];
 
     //Get the type of the message
     char type = message[2];
@@ -152,15 +154,18 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     char *content = message + 3;
 
     //Calculate the checksum
-    char checkSum = type;
+    unsigned char checkSum = 0;
     int i;
     for (i=0; i<length; i++) {
-        checkSum += content[i];
+        checkSum += (unsigned char)content[i];
     }
-    checkSum = checkSum & 0xff;
+    checkSum = ((unsigned char)type+checkSum) & 0xff;
+
     //Compare it to the received one to verify that the message is not corrupted
-    if (checkSum != content[length]) {
+    if (checkSum != (unsigned char)content[length]) {
         perror("game-player : message.c : extractMessage() :\nError: Checksum not verified. The receive message may be corrupted.\n");
+        printf("Read checksum is %x\n", (unsigned char)checkSum);
+        printf("Expected checksum was %x\n", (unsigned char)content[length]);
         return (MessageType)-1;
     }
 
@@ -174,7 +179,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
             playerName[n] = content[n+1];
         }
         playerName[playerNameLen] = '\0';
-        data->playerName = playerName;
+        data->playerName = newString(playerName, playerNameLen);
         break;
 
     case 0x03:

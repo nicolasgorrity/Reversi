@@ -9,6 +9,6 @@
 
 char *createMessage(MessageType message, MessageDataSend *data);
 MessageType extractMessage(char *message, MessageDataRead *data);
-Color charToCellColor(char cellState);
+Color charToCellColor(unsigned char cellState);
 
 #endif // MESSAGE_H_INCLUDED

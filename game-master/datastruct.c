@@ -1,5 +1,5 @@
 #include "datastruct.h"
-
+#include <stdio.h>
 void freeBoard(Board *board) {
     int i;
     for (i=0; i<board->dimensions->y; i++) {
@@ -32,4 +32,16 @@ Board* allocateInitialBoard(unsigned short sizeX, unsigned short sizeY) {
     }
 
     return board;
+}
+
+String* newString(char *text, unsigned short length) {
+    String *string = (String*)malloc(sizeof(String));
+    string->text = text;
+    string->length = length;
+    return string;
+}
+
+void freeString(String *mystring) {
+    free(mystring->text);
+    free(mystring);
 }

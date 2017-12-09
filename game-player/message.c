@@ -59,7 +59,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
 
     //Fill the final message string
     messageString[0] = synchroValue;
-    messageString[1] = (char)length;
+    messageString[1] = length;
     messageString[2] = type;
     for (i=0; i<length; i++) {
         messageString[i+3] = content[i];
@@ -79,7 +79,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     if (message[0] != synchroValue) return (MessageType)-1;
 
     //Get length of the message
-    int length = (int)message[1];
+    int length = message[1];
 
     //Get the type of the message
     char type = message[2];
@@ -88,17 +88,21 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     char *content = message + 3;
 
     //Calculate the checksum
-    char checkSum = type;
+    unsigned char checkSum = 0;
     int i;
     for (i=0; i<length; i++) {
-        checkSum += content[i];
+        checkSum += (unsigned char)content[i];
     }
-    checkSum = checkSum & 0xff;
+    checkSum = ((unsigned char)type+checkSum) & 0xff;
+
     //Compare it to the received one to verify that the message is not corrupted
-    if (checkSum != content[length]) {
+    if (checkSum != (unsigned char)content[length]) {
         perror("game-player : message.c : extractMessage() :\nError: Checksum not verified. The receive message may be corrupted.\n");
+        printf("Read checksum is %x\n", (unsigned char)checkSum);
+        printf("Expected checksum was %x\n", (unsigned char)content[length]);
         return (MessageType)-1;
     }
+
     switch(type) {
     case 0x10:
         messageType = INIT_OK;
@@ -138,11 +142,11 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         int dataChar, board_i=0, board_j=0;
         char exit=0;
         for (dataChar=0; dataChar<length; dataChar++) {
-            char factor = 0b11000000;
+            unsigned char factor = 0b11000000;
             int r, byteDivider = 6; //6: 2 most significants bits // 4: 2 bits after //2: 2 bits after  // 0: 2 least significant bits
             for (r=0; r<4; r++) { //4 cells are encoded on one byte
                 //Only retrieve the 2 interesting bits: isolate them with factor ; translate them as LSBs with byteDivider
-                char cellState = (messageBoardState[dataChar]&factor)>>byteDivider;
+                unsigned char cellState = ((unsigned char)messageBoardState[dataChar]&factor)>>byteDivider;
                 data->board->state[board_i][board_j] = charToCellColor(cellState);
                 //Prepare the next cell to be filled
                 board_j++;
@@ -178,7 +182,7 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
     return messageType;
 }
 
-Color charToCellColor(char cellState) {
+Color charToCellColor(unsigned char cellState) {
     Color color;
     switch (cellState) {
         case 0b00000000:
@@ -192,6 +196,7 @@ Color charToCellColor(char cellState) {
             break;
         default:
             perror("game-player : message.c : charToCell() : \nError: Received incompatible cell value\n");
+            printf("Value is %x\n, should be either 0x00, 0x01 or 0x02\n", (unsigned char)cellState);
             color = (Color)-1;
     }
     return color;

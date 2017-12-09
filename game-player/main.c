@@ -1,10 +1,11 @@
 #include "connection.h"
 #include "message.h"
 #include "play.h"
+#include "display.h"
 
 int main(int argc, char *argv[])
 {
-    unsigned int port = 8889;
+    unsigned int port = 8888;
     printf("Port number: %d\n", port);
     char *name = "Jean-Mi";
 
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
         perror("game-player : main.c : Could not send CONNECT message\n");
         return disconnect(socket);
     }
+    printf("Sent CONNECT message to game-master\n");
 
     ///Wait for OK message
     char *okMessage = readMessage(socket);
@@ -29,6 +31,7 @@ int main(int argc, char *argv[])
         return disconnect(socket);
     }
     Color playerColor = dataRead->playerColor;
+    printf("Received OK message from game-master\n");
 
     ///Game loop
     while (1) {
@@ -37,11 +40,12 @@ int main(int argc, char *argv[])
         MessageType result = extractMessage(nextTurnMessage, dataRead);
         if (result == NEXT_TURN) {
             Board *board = dataRead->board;
+            displayBoard(board);
 
             ///Find the best move
             Coords *bestMove = findBestMove(board, playerColor);
             freeBoard(board);
-
+printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
             ///Send NEW_MOVE message
             char *messageToSend;
             dataSend->newMoveCoords = bestMove;
@@ -52,6 +56,7 @@ int main(int argc, char *argv[])
                 perror("game-player : main.c : Could not send the new move message\n");
                 return disconnect(socket);
             }
+            printf("Sent NEW_MOVE message to game-master\n");
 
             ///Wait for OK or NOK message
             okMessage = readMessage(socket);
@@ -61,6 +66,7 @@ int main(int argc, char *argv[])
                 else perror("game-player : main.c : Could not read OK or NOK message\n");
                 return disconnect(socket);
             }
+            printf("Received %s message from game-master\n",result == OK ? "OK" : "NOK");
         }
         else {
             if (result == END) printf("game-player : Received END message: disconnecting...\n");

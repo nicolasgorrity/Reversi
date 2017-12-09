@@ -31,7 +31,7 @@ int bindSocket(int socket, unsigned int port)
 
 int listenSocket(int socket)
 {
-    puts("Waiting for incoming connections...");
+    puts("Waiting for incoming connections...\n");
     listen(socket, 3);
     return 0;
 }
@@ -44,10 +44,10 @@ int acceptSocket(int socket)
     client_sock = accept(socket, (struct sockaddr*)&client, (socklen_t*)&c);
     if (client_sock < 0)
     {
-        perror("game-master : connection.c in function acceptSocket() : accept failed");
+        perror("game-master : connection.c in function acceptSocket() : accept failed\n");
         return -1;
     }
-    printf("Connection accepted on port %d", client.sin_port);
+    printf("Connection accepted\n");
     return client_sock;
 }
 
@@ -71,12 +71,11 @@ char* readMessage(int socket)
     return shortMessage;
 }
 
-
-int writeMessage(int socket, char *message)
+int writeMessage(int socket, String *message)
 {
-    if (write(socket, message, strlen(message)) < 0)
+    if (write(socket, message->text, message->length) < 0)
     {
-        printf("game-master : connection.c in function writeMessage() : write failed. Message was: %s \n", message);
+        printf("game-master : connection.c in function writeMessage() : write failed.\n");
         return -1;
     }
     return 0;
@@ -104,5 +103,6 @@ int disconnect(int socket1, int socket2, int socketC, int sock1, int sock2, int 
         res = close(sock3);
         if (res < 0) perror("game-master : connection.c : could not disconnect client socket 3\n");
     }
+    printf("game-master stopping...\n");
     return 0;
 }

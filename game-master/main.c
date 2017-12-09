@@ -7,14 +7,15 @@ Coords* requestPlayerMove(int playerSocket, Board *board) {
     ///Send NEXT-TURN message to player
     MessageDataSend *dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
     dataSend->board = board;
-    char *nextTurnMsg = createMessage(NEXT_TURN, dataSend);
+    String *nextTurnMsg = createMessage(NEXT_TURN, dataSend);
     free(dataSend);
     if(writeMessage(playerSocket, nextTurnMsg) < 0) {
         perror("game-master : main.c : requestPlayerMove() : Could not send NEXT_TURN message\n");
-        free(nextTurnMsg);
+        freeString(nextTurnMsg);
         return NULL;
     }
-    free(nextTurnMsg);
+    printf("Sent NEXT_TURN message to game-player\n");
+    freeString(nextTurnMsg);
 
     ///Wait for NEW_MOVE message
     char *newMoveMsg = readMessage(playerSocket);
@@ -26,6 +27,7 @@ Coords* requestPlayerMove(int playerSocket, Board *board) {
         return NULL;
     }
     free(newMoveMsg);
+    printf("Received NEW_MOVE message from game-player\n");
 
     Coords *newMove = dataRead->newMoveCoords;
     free(dataRead);
@@ -40,82 +42,88 @@ int main(int argc, char *argv[])
     unsigned int portController = 8890;
 
     int socket1 = createSocket();
-    int socket2 = createSocket();
-    int socketC = createSocket();
+    int socket2 = -1;//createSocket();
+    int socketC = -1;//createSocket();
 
     if (bindSocket(socket1, portPlayer1) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
-    if (bindSocket(socket2, portPlayer2) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
-    if (bindSocket(socketC, portController) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
+    //if (bindSocket(socket2, portPlayer2) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
+    //if (bindSocket(socketC, portController) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
 
     if (listenSocket(socket1) < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
-    int sockW = acceptSocket(socket1);
-    if (sockW < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
 
-    if (listenSocket(socket2) < 0) return disconnect(socket1, socket2, socketC, sockW, -1, -1);
-    int sockB = acceptSocket(socket2);
-    if (sockB < 0) return disconnect(socket1, socket2, socketC, sockW, -1, -1);;
+    int sockB = acceptSocket(socket1);
+    if (sockB < 0) return disconnect(socket1, socket2, socketC, -1, -1, -1);
+    printf("First player connected\n");
+
+    //if (listenSocket(socket2) < 0) return disconnect(socket1, socket2, socketC, sockB, -1, -1);
+    int sockW = acceptSocket(socket1);
+    if (sockW < 0) return disconnect(socket1, socket2, socketC, sockB, -1, -1);
+    printf("Second player connected\n");
 
     int sockC = -1;
     /*if (listenSocket(socketC) < 0) return disconnect(socket1, socket2, socketC, sockW, sockB, -1);;
     int sockC = acceptSocket(socketC);
     if (sockC < 0) return disconnect(socket1, socket2, socketC, sockW, sockB, -1);;
 */
-    ////////White player///////
-    ///Wait for Connect message
-    char *connectMsgW = readMessage(sockW);
-    MessageDataRead *dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
-    if (extractMessage(connectMsgW, dataRead) != CONNECT) {
-        perror("game-master : main.c : Could not read CONNECT message\n");
-        free(connectMsgW);
-        free(dataRead);
-        return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
-    }
-    char* whiteName = dataRead->playerName;
-    free(dataRead);
-    free(connectMsgW);
-
-    ///Send OK message
-    MessageDataSend *dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
-    dataSend->playerColor = WHITE;
-    free(dataSend);
-    char *okMessage = createMessage(INIT_OK, dataSend);
-    if(writeMessage(sockW, okMessage) < 0) {
-        perror("game-master : main.c : Could not send OK message\n");
-        free(whiteName);
-        free(okMessage);
-        return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
-    }
-    free(okMessage);
-
     ////////Black player///////
     ///Wait for Connect message
     char *connectMsgB = readMessage(sockB);
-    dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
+    MessageDataRead *dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
     if (extractMessage(connectMsgB, dataRead) != CONNECT) {
         perror("game-master : main.c : Could not read CONNECT message\n");
-        free(whiteName);
         free(connectMsgB);
         free(dataRead);
         return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
     }
-    char* blackName = dataRead->playerName;
+    printf("Received CONNECT message from BP\n");
+    String* blackName = dataRead->playerName;
     free(dataRead);
     free(connectMsgB);
 
     ///Send OK message
-    dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
+    MessageDataSend *dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
     dataSend->playerColor = BLACK;
-    okMessage = createMessage(INIT_OK, dataSend);
+    String *okMessage = createMessage(INIT_OK, dataSend);
     free(dataSend);
     if(writeMessage(sockB, okMessage) < 0) {
-        perror("game-master : main.c : Could not send INIT_OK message\n");
-        free(blackName);
-        free(whiteName);
-        free(okMessage);
+        perror("game-master : main.c : Could not send OK message\n");
+        freeString(blackName);
+        freeString(okMessage);
         return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
     }
-    free(okMessage);
+    printf("Sent OK message to BP\n");
+    freeString(okMessage);
+
+    ////////White player///////
+    ///Wait for Connect message
+    char *connectMsgW = readMessage(sockW);
+    dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
+    if (extractMessage(connectMsgW, dataRead) != CONNECT) {
+        perror("game-master : main.c : Could not read CONNECT message\n");
+        freeString(blackName);
+        free(connectMsgW);
+        free(dataRead);
+        return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
+    }
+    String *whiteName = dataRead->playerName;
+    printf("Received CONNECT message from WP\n");
+    free(dataRead);
+    free(connectMsgW);
+
+    ///Send OK message
+    dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
+    dataSend->playerColor = WHITE;
+    okMessage = createMessage(INIT_OK, dataSend);
     free(dataSend);
+    if(writeMessage(sockW, okMessage) < 0) {
+        perror("game-master : main.c : Could not send INIT_OK message\n");
+        freeString(blackName);
+        freeString(whiteName);
+        freeString(okMessage);
+        return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
+    }
+    printf("Sent OK message to WP\n");
+    freeString(okMessage);
 
     ///////////////////////////////////////////
     ////////Message to Game Controller????/////
@@ -134,13 +142,14 @@ int main(int argc, char *argv[])
             okMessage = createMessage(NOK, NULL);
             if (writeMessage(sockB, okMessage) < 0) {
                 perror("game-master : main.c : Could not send NOK message to BP\n");
-                free(okMessage);
+                freeString(okMessage);
                 freeBoard(board);
-                free(blackName);
-                free(whiteName);
+                freeString(blackName);
+                freeString(whiteName);
                 return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
             }
-            free(okMessage);
+            printf("Sent NOK message to BP\n");
+            freeString(okMessage);
             if (newMove != NULL) free(newMove);
             //Black player just lost
             hasLost = BLACK;
@@ -151,13 +160,14 @@ int main(int argc, char *argv[])
         okMessage = createMessage(OK, NULL);
         if (writeMessage(sockB, okMessage) < 0) {
             perror("game-master : main.c : Could not send OK message to BP\n");
-            free(okMessage);
+            freeString(okMessage);
             freeBoard(board);
-            free(blackName);
-            free(whiteName);
+            freeString(blackName);
+            freeString(whiteName);
             return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
         }
-        free(okMessage);
+        printf("Sent OK message to BP\n");
+        freeString(okMessage);
 
         ///Update board with new move
         updateBoard(board, newMove, BLACK);
@@ -171,19 +181,7 @@ int main(int argc, char *argv[])
 
         /////////////////////////////////////////////////
         //////////SEND NEW BOARD TO AFFICHAGE////////////
-        PlayersData *playersData = (PlayersData*)malloc(sizeof(PlayerData));
-        playersData->dataBP = (PlayerData*)malloc(sizeof(PlayerData));
-        playersData->dataWP = (PlayerData*)malloc(sizeof(PlayerData));
-        playersData->dataBP->playerName = "coucouBlackPlayer";
-        playersData->dataWP->playerName = "coucouWhitePlayer";
-        playersData->dataBP->points = whiteScore;
-        playersData->dataWP->points = blackScore;
-        playersData->dataBP->timer = 1;
-        playersData->dataWP->timer = 1;
-        displayAllData(board, playersData);
-        free(playersData->dataBP);
-        free(playersData->dataWP);
-        free(playersData);
+        displayBoard(board);
         ////////////////END AFFICHAGE////////////////////
         /////////////////////////////////////////////////
 
@@ -194,13 +192,14 @@ int main(int argc, char *argv[])
             okMessage = createMessage(NOK, NULL);
             if (writeMessage(sockW, okMessage) < 0) {
                 perror("game-master : main.c : Could not send NOK message to WP\n");
-                free(okMessage);
+                freeString(okMessage);
                 freeBoard(board);
-                free(blackName);
-                free(whiteName);
+                freeString(blackName);
+                freeString(whiteName);
                 return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
             }
-            free(okMessage);
+            printf("Sent NOK message to WP\n");
+            freeString(okMessage);
             if (newMove != NULL) free(newMove);
             //Black player just lost
             hasLost = WHITE;
@@ -211,13 +210,14 @@ int main(int argc, char *argv[])
         okMessage = createMessage(OK, NULL);
         if (writeMessage(sockW, okMessage) < 0) {
             perror("game-master : main.c : Could not send OK message to WP\n");
-            free(okMessage);
+            freeString(okMessage);
             freeBoard(board);
-            free(blackName);
-            free(whiteName);
+            freeString(blackName);
+            freeString(whiteName);
             return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
         }
-        free(okMessage);
+        printf("Sent OK message to WP\n");
+        freeString(okMessage);
 
         ///Update board with new move
         updateBoard(board, newMove, WHITE);
@@ -231,19 +231,7 @@ int main(int argc, char *argv[])
 
         /////////////////////////////////////////////////
         //////////SEND NEW BOARD TO AFFICHAGE////////////
-        playersData = (PlayersData*)malloc(sizeof(PlayerData));
-        playersData->dataBP = (PlayerData*)malloc(sizeof(PlayerData));
-        playersData->dataWP = (PlayerData*)malloc(sizeof(PlayerData));
-        playersData->dataBP->playerName = blackName;
-        playersData->dataWP->playerName = whiteName;
-        playersData->dataBP->points = whiteScore;
-        playersData->dataWP->points = blackScore;
-        playersData->dataBP->timer = 1;
-        playersData->dataWP->timer = 1;
-        displayAllData(board, playersData);
-        free(playersData->dataBP);
-        free(playersData->dataWP);
-        free(playersData);
+        displayBoard(board);
         ////////////////END AFFICHAGE////////////////////
         /////////////////////////////////////////////////
 
@@ -258,23 +246,25 @@ int main(int argc, char *argv[])
     }
 
     ///Send END message
-    char *endMessage = createMessage(END, NULL);
+    String *endMessage = createMessage(END, NULL);
     if(writeMessage(sockW, endMessage) < 0) {
         perror("game-master : main.c : Could not send END message to WP\n");
-        free(endMessage);
+        freeString(endMessage);
         freeBoard(board);
-        free(blackName);
-        free(whiteName);
+        freeString(blackName);
+        freeString(whiteName);
         return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
     }
+    printf("Sent END message to WP\n");
     if(writeMessage(sockB, endMessage) < 0) {
         perror("game-master : main.c : Could not send END message to BP\n");
-        free(endMessage);
+        freeString(endMessage);
         freeBoard(board);
-        free(blackName);
-        free(whiteName);
+        freeString(blackName);
+        freeString(whiteName);
         return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
     }
+    printf("Sent END message to BP\n");
     /*if(writeMessage(sockC, endMessage) < 0) {
         perror("game-master : main.c : Could not send END message to WP\n");
         free(endMessage);
@@ -283,11 +273,11 @@ int main(int argc, char *argv[])
         free(whiteName);
         return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
     }*/
-    free(endMessage);
+    freeString(endMessage);
 
     freeBoard(board);
-    free(blackName);
-    free(whiteName);
+    freeString(blackName);
+    freeString(whiteName);
 
     return disconnect(socket1, socket2, socketC, sockW, sockB, sockC);
 }

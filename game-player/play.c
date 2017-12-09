@@ -4,6 +4,9 @@ Coords* findBestMove(Board *board, Color playerColor) {
     ///Get the chained list of playable cells
     PlayableCell *playableCells = findPlayableCells(board, playerColor);
 
+    int cpt = 0;
+    PlayableCell *tmp = playableCells;
+    while (tmp!= NULL) {cpt++;tmp=tmp->next;} printf("Number of playable cells: %d\n",cpt);
     ///Chose the best move
     //For now, we simply send the first one
     Coords* bestMove;
@@ -90,6 +93,7 @@ PlayableCell* findPlayableCells(Board *board, Color playerColor) {
                                         else {
                                             playableCell = (PlayableCell*)malloc(sizeof(PlayableCell));
                                             playableCell->nbOfArrays = 0;
+                                            playableCells = playableCell;
                                         }
                                         //Add it to the cell information
                                         if (playableCell->nbOfArrays == 0) {

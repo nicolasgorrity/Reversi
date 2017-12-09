@@ -26,6 +26,14 @@ void freeBoard(Board *board);
 
 Board* allocateInitialBoard(unsigned short sizeX, unsigned short sizeY);
 
+
+typedef struct StringStruct {
+    char *text;
+    unsigned short length;
+} String;
+String* newString(char *text, unsigned short length);
+void freeString(String *mystring);
+
 //Data to send to a message -> structure can be different according to the message, so we use a union
 typedef union DataToSend {
     Color playerColor;    //For Player OK
@@ -35,7 +43,7 @@ typedef union DataToSend {
 //Data to read from a message -> structure can be different according to the message, so we use a union
 typedef union DataToRead {
     Coords *newMoveCoords; //For NEW_MOVE
-    char *playerName;      //For CONNECT
+    String *playerName;      //For CONNECT
 } MessageDataRead;
 
 //Player data structure
