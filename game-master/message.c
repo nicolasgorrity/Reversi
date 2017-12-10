@@ -6,7 +6,7 @@ String *createMessage(MessageType messageType, MessageDataSend *data) {
     char *messageString = NULL;
     unsigned short length = 0;
 
-    char type;
+    char type = 0x00;
     char *content;
     char checksum = 0;
 
@@ -42,15 +42,17 @@ String *createMessage(MessageType messageType, MessageDataSend *data) {
         content[0] = 0x00;
         break;
 
+    case STATUS1:
+        type = 0x06;
     case NEXT_TURN:
         if (data == NULL || data->board == NULL) {
-            perror("game-master : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEXT_TURN message\n");
+            perror("game-master : message.c : createMessage() :\nError: Received NULL DataToSend structure for a NEXT_TURN or STATUS1 message\n");
             return NULL;
         }
         int nbCells = data->board->dimensions->x * data->board->dimensions->y;
         int nbBytes = nbCells/4 + (nbCells%4 > 0 ? 1 : 0);
         length = nbBytes + 4;
-        type = 0x05;
+        if (type == 0x00) type = 0x05;
         //Allocate char array to store the message content
         content = (char*)malloc(length*sizeof(char));
         //Fill the data
@@ -88,12 +90,34 @@ String *createMessage(MessageType messageType, MessageDataSend *data) {
         }
         break;
 
-    case STATUS1:
-
-        break;
-
     case STATUS2:
-
+        if (data == NULL) {
+            perror("game-master : message.c : createMessage() :\nError: Received NULL DataToSend structure for a STATUS2 message\n");
+            return NULL;
+        }
+        unsigned short whiteNameLen = data->playersData->dataWP->playerName->length;
+        unsigned short blackNameLen = data->playersData->dataBP->playerName->length;
+        length = whiteNameLen + blackNameLen + 8;
+        type = 0x07;
+        //Allocate char array to store the message content
+        content = (char*)malloc(length*sizeof(char));
+        //Fill the data
+        content[0] = data->playersData->dataBP->points; //black score
+        content[1] = data->playersData->dataBP->timer >> 8; //black timer MSBs
+        content[2] = data->playersData->dataBP->timer; //black timer LSBs
+        content[3] = blackNameLen;
+        unsigned short r;
+        for (r=0; r<blackNameLen; r++) {
+            content[4+r] = data->playersData->dataBP->playerName->text[r];
+        }
+        char *content2 = content + 4 + blackNameLen;
+        content2[0] = data->playersData->dataWP->points; //black score
+        content2[1] = data->playersData->dataWP->timer >> 8; //black timer MSBs
+        content2[2] = data->playersData->dataWP->timer; //black timer LSBs
+        content2[3] = whiteNameLen;
+        for (r=0; r<whiteNameLen; r++) {
+            content2[4+r] = data->playersData->dataWP->playerName->text[r];
+        }
         break;
 
     case END:
@@ -182,11 +206,26 @@ MessageType extractMessage(char *message, MessageDataRead *data) {
         data->playerName = newString(playerName, playerNameLen);
         break;
 
+    case 0x02:
+        if (content[0] == 0x01) messageType = OK;
+        else if (content[0] == 0x00) messageType = NOK;
+        break;
+
     case 0x03:
         messageType = NEW_MOVE;
         data->newMoveCoords = (Coords*)malloc(sizeof(Coords));
         data->newMoveCoords->x = (unsigned short)content[0];
         data->newMoveCoords->y = (unsigned short)content[1];
+        break;
+
+    case 0x08:
+        messageType = CONTROL;
+        data->control = (ControlData*)malloc(sizeof(ControlData));
+        data->control->newBoardSize = (Coords*)malloc(sizeof(Coords));
+        data->control->newBoardSize->x = content[0];
+        data->control->newBoardSize->y = content[1];
+        data->control->mode = content[2];
+        data->control->restart = content[3];
         break;
 
     default:

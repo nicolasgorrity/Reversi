@@ -27,7 +27,7 @@ void displayPlayersData(PlayersData *playersData) {
     int spaceTab = 20;
     int leftTab = 10;
     printf("\n%-*s%-*s%-*s\n", leftTab, "Player:", spaceTab, "Black", spaceTab, "White");
-    printf("%-*s%-*s%-*s\n", leftTab, "Name:", spaceTab, playersData->dataBP->playerName, spaceTab, playersData->dataWP->playerName);
+    printf("%-*s%-*s%-*s\n", leftTab, "Name:", spaceTab, playersData->dataBP->playerName->text, spaceTab, playersData->dataWP->playerName->text);
     printf("%-*s%-*s%-*s\n", leftTab, "Last move:", spaceTab, "", spaceTab, "");
     printf("%-*s%-*d%-*d\n", leftTab, "Points:", spaceTab, playersData->dataBP->points, spaceTab, playersData->dataWP->points);
     printf("%-*s%-*d%-*d\n", leftTab, "Time:", spaceTab, playersData->dataBP->timer, spaceTab, playersData->dataWP->timer);

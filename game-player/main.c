@@ -2,6 +2,29 @@
 #include "message.h"
 #include "artificial_intelligence.h"
 #include "display.h"
+#include <pthread.h>
+
+void *pingThreadFunc(void *ptSocket) {
+    int socket = *((int *) ptSocket);
+    free(ptSocket);
+    while (1) {
+        ///Wait for PING message
+        char *pingMessage = readMessage(socket);
+        if (extractMessage(pingMessage, NULL) == PING) {
+            printf("Received PING message from game-master\n");
+            free(pingMessage);
+            ///Send OK message
+            String *okMessage = createMessage(OK, NULL);
+            if (writeMessage(socket, okMessage) < 0) {
+                perror("game-master : main.c : pingThreadFunc : Could not send OK message after PING\n");
+                freeString(okMessage);
+            }
+            freeString(okMessage);
+            printf("Sent OK message to game-master after the PING\n");
+        }
+        free(pingMessage);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -49,12 +72,19 @@ int main(int argc, char *argv[])
         if (result == NEXT_TURN) {
             Board *board = dataRead->board;
             free(dataRead);
-            displayBoard(board);
-
+            //displayBoard(board);
+            /*///While calculating, launch a thread for PING
+            pthread_t pthread1;
+            int *i = (int*)malloc(sizeof(int)); (*i)=socket;
+            if (pthread_create(&pthread1, NULL, pingThreadFunc, (void*)i) != 0) perror("Could not create thread for PING feature\n");
+*/
             ///Find the best move
             Coords *bestMove = findBestMove(board, playerColor);
             freeBoard(board);
             printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
+
+            ///End the thread for PING
+  //          pthread_cancel(pthread1);
 
             ///Send NEW_MOVE message
             dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
@@ -83,8 +113,18 @@ int main(int argc, char *argv[])
         }
         else {
             free(dataRead);
+            if (result == PING) {
+                ///If PING was received, send back a OK message
+                String *messageToSend = createMessage(OK, NULL);
+                if (writeMessage(socket, messageToSend) < 0) {
+                    perror("game-player : main.c : Could not send the OK message after PING\n");
+                    freeString(messageToSend);
+                }
+                freeString(messageToSend);
+                printf("Sent OK message to game-master after the PING\n");
+            }
             if (result == END) printf("game-player : Received END message: disconnecting...\n");
-            else printf("game-player : main.c : Expected message of type NEXT_TURN\n");
+            else printf("game-player : main.c : Received unexpected message\n");
             return disconnect(socket);
         }
     }

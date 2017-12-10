@@ -45,3 +45,11 @@ void freeString(String *mystring) {
     free(mystring->text);
     free(mystring);
 }
+
+void freePlayersData(PlayersData *playersData) {
+    freeString(playersData->dataBP->playerName);
+    freeString(playersData->dataWP->playerName);
+    free(playersData->dataBP);
+    free(playersData->dataWP);
+    free(playersData);
+}

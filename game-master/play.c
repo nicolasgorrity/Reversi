@@ -72,6 +72,10 @@ void updateBoard(Board *board, Coords *newMove, Color playerColor) {
             }
         }
     }
+
+    ///Update the last move
+    board->lastMove->x = newMove->x;
+    board->lastMove->y = newMove->y;
 }
 
 unsigned short getNumberOfRemainingMoves(Board *board, Color playerColor) {

@@ -3,24 +3,26 @@
 Coords* findBestMove(Board *board, Color playerColor) {
     Coords* bestMoveCopy = (Coords*)malloc(sizeof(Coords));
 
-    if (playerColor == BLACK) {
+    if (1) { //ALWAYS USE MINIMAX IA
+        ///Get the heuristic table
         int **heuristicTable = heuristicBoard(board);
+        ///Define the depth of the tree: here we predict 5 moves in advance (opponent's moves included)
         unsigned short depth = 5;
+        ///Find the best move with MINIMAX algorithm
         Node *bestMove = minimax(board, NULL, depth, playerColor, 1, heuristicTable);
+        ///Store the coordinates of the best move
         bestMoveCopy->x = bestMove->cellCoords->x;
         bestMoveCopy->y = bestMove->cellCoords->y;
+        ///Free IA tools
         free(bestMove);
         int i;
         for (i=0; i<board->dimensions->y; i++) free(heuristicTable[i]);
         free(heuristicTable);
     }
-    else {
+    else {  //THIS IS THE METHOD WITHOUT IA. PLAYABLECELLS CONTAIN A LOT OF INFORMATION SO WE CAN STILL DO INTERESTING THINGS, BUT NOT ANTICIPATE THE FUTURE MOVES
         ///Get the chained list of playable cells
         PlayableCell *playableCells = findPlayableCells(board, playerColor);
 
-        int cpt = 0;
-        PlayableCell *tmp = playableCells;
-        while (tmp!= NULL) {cpt++;tmp=tmp->next;} printf("Number of playable cells: %d\n",cpt);
         ///Chose the best move
         //For now, we simply send the first one
         Coords* bestMove;
@@ -80,6 +82,10 @@ Node* minimax(Board *board, PlayerTurn *playerTurns, unsigned short depth, Color
         //If no playable move for player, should avoid this node ? (evaluation = INT_MIN)
         if (playableCells == NULL) {
             node->evaluation = heuristic(boardCpy, node->cellCoords, playerColor, heuristicTable);
+            if (lastMove != NULL) {
+                node->cellCoords->x = lastMove->cellCoords->x;
+                node->cellCoords->y = lastMove->cellCoords->y;
+            }
         }
         //Browse child nodes
         PlayableCell *childNodeTmp = playableCells;
@@ -113,9 +119,13 @@ Node* minimax(Board *board, PlayerTurn *playerTurns, unsigned short depth, Color
         //Search child nodes
         Color opponentColor = getOpponentColor(playerColor);
         PlayableCell *playableCells = findPlayableCells(boardCpy, opponentColor);
-        //If no playable move for opponent, should keep this node ? (evaluation = INT_MAX)
+        //If no playable move for opponent, should keep this node ? (evaluation = INT_MAX) --> this will valorize moves blocking the opponent
         if (playableCells == NULL) {
             node->evaluation = heuristic(boardCpy, node->cellCoords, playerColor, heuristicTable);
+            if (lastMove != NULL) {
+                node->cellCoords->x = lastMove->cellCoords->x;
+                node->cellCoords->y = lastMove->cellCoords->y;
+            }
         }
         //Browse child nodes
         PlayableCell *childNodeTmp = playableCells;

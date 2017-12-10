@@ -33,30 +33,37 @@ typedef struct StringStruct {
 String* newString(char *text, unsigned short length);
 void freeString(String *mystring);
 
-//Data to send to a message -> structure can be different according to the message, so we use a union
-typedef union DataToSend {
-    Color playerColor;    //For Player OK
-    Board *board;   //For NEXT_TURN
-} MessageDataSend;
-
-//Data to read from a message -> structure can be different according to the message, so we use a union
-typedef union DataToRead {
-    Coords *newMoveCoords; //For NEW_MOVE
-    String *playerName;      //For CONNECT
-} MessageDataRead;
+typedef struct ControlDataStruct {
+    Coords *newBoardSize;
+    char restart;
+    char mode;
+} ControlData;
 
 //Player data structure
 typedef struct PlayerDataStructure {
     unsigned int points;
-    unsigned int timer;
-    unsigned int timerMSB;
-    unsigned int timerLSB;
-    char *playerName;
+    unsigned short timer;
+    String *playerName;
 } PlayerData;
 
 typedef struct PlayersDataStructure {
     PlayerData *dataWP;
     PlayerData *dataBP;
 } PlayersData;
+void freePlayersData(PlayersData *playersData);
+
+//Data to send to a message -> structure can be different according to the message, so we use a union
+typedef union DataToSend {
+    Color playerColor;    //For Player OK
+    Board *board;   //For NEXT_TURN and STATUS1
+    PlayersData *playersData;   //For STATUS2
+} MessageDataSend;
+
+//Data to read from a message -> structure can be different according to the message, so we use a union
+typedef union DataToRead {
+    Coords *newMoveCoords; //For NEW_MOVE
+    String *playerName;      //For CONNECT
+    ControlData *control;
+} MessageDataRead;
 
 #endif // DATASTRUCT_H_INCLUDED

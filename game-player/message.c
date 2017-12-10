@@ -43,6 +43,15 @@ String *createMessage(MessageType messageType, MessageDataSend *data) {
         content[1] = data->newMoveCoords->y; //y new position
         break;
 
+    case OK:
+        length = 1;
+        type = 0x02;
+        //Allocate char array to store the message content
+        content = (char*)malloc(length*sizeof(char));
+        //Fill the data
+        content[0] = 0x01;
+        break;
+
     default:
         return NULL;
     }
