@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
             ///Find the best move
             Coords *bestMove = findBestMove(board, playerColor);
             freeBoard(board);
-printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
+            printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
+
             ///Send NEW_MOVE message
             dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
             dataSend->newMoveCoords = bestMove;

@@ -63,6 +63,6 @@ int writeMessage(int socket, String *message)
 
 int disconnect(int socket)
 {
-    printf("game-player stopping\n");
+    printf("game-player stopping...\n");
     return close(socket);
 }

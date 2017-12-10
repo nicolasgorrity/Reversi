@@ -277,8 +277,10 @@ int main(int argc, char *argv[])
             }
         }
         ///End of this game
-        printf("--- END OF GAME ---\n");
+        printf("\n--- END OF GAME ---\n");
         displayBoard(board);
+        if (hasLost == BLACK) blackScore = 0;
+        else if (hasLost == WHITE) whiteScore = 0;
         printf("White score: %d\n",whiteScore);
         printf("Black score: %d\n",blackScore);
         freeBoard(board);
@@ -287,7 +289,6 @@ int main(int argc, char *argv[])
         printf("\nNew game ?\n");
         char c = getchar();
         clean_stdin();
-        printf("%c\n",c);
         if (c!='y' && c!='Y' && c!='o' && c!='O') {
             endOfGame = 1;
             continue;

@@ -81,24 +81,27 @@ int writeMessage(int socket, String *message)
     return 0;
 }
 
-
 int disconnect(int socket1, int sock1, int sock2, int sock3)
 {
     printf("game-master : End of the Game. Disconnecting...\n");
-    int res = close(socket1);
-    if (res < 0) perror("game-master : connection.c : could not disconnect server socket1\n");
+    char buf[1];
     if (sock1 >= 0) {
-        res = close(sock1);
+        while (recv(sock1, buf, 1, 0) > 0); //wait for client to close sock1
+        int res = close(sock1);
         if (res < 0) perror("game-master : connection.c : could not disconnect client socket 1\n");
     }
     if (sock2 >= 0) {
-        res = close(sock2);
+        while (recv(sock2, buf, 1, 0) > 0); //wait for client to close sock2
+        int res = close(sock2);
         if (res < 0) perror("game-master : connection.c : could not disconnect client socket 2\n");
     }
     if (sock3 >= 0) {
-        res = close(sock3);
+        while (recv(sock3, buf, 1, 0) > 0); //wait for client to close sock3
+        int res = close(sock3);
         if (res < 0) perror("game-master : connection.c : could not disconnect client socket 3\n");
     }
+    int res = close(socket1);
+    if (res < 0) perror("game-master : connection.c : could not disconnect server socket1\n");
     printf("game-master stopping...\n");
     return 0;
 }
