@@ -2,9 +2,9 @@
 
 #define synchroValue 0x55
 
-char *createMessage(MessageType messageType, MessageDataSend *data) {
+String *createMessage(MessageType messageType, MessageDataSend *data) {
     char *messageString = NULL;
-    int length = 0;
+    unsigned short length = 0;
 
     char type;
     char *content;
@@ -16,7 +16,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
             perror("game-player : message.c : createMessage() :\nError: Received NULL DataToSend structure for a CONNECT message\n");
             return NULL;
         }
-        int nameSize = strlen(data->playerName);
+        int nameSize = strlen(data->playerName->text);
         length = nameSize + 1;
         type = 0x01;
         //Allocate char array to store the message content
@@ -25,7 +25,7 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         content[0] = (char)nameSize;
         int i;
         for (i=0; i<nameSize; i++) {
-            content[i+1] = data->playerName[i];
+            content[i+1] = data->playerName->text[i];
         }
         break;
 
@@ -47,15 +47,15 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         return NULL;
     }
 
-    //Calculate the checksum
+        //Calculate the checksum
     int i;
     for (i=0; i<length; i++) {
-        checksum += content[i];
+        checksum += (unsigned char)content[i];
     }
     checksum = (type+checksum) & 0xff;
 
     //Allocate final message string
-    messageString = (char*)malloc((length+4)*sizeof(char));
+    messageString = (char*)malloc((length+5)*sizeof(char));
 
     //Fill the final message string
     messageString[0] = synchroValue;
@@ -65,11 +65,13 @@ char *createMessage(MessageType messageType, MessageDataSend *data) {
         messageString[i+3] = content[i];
     }
     messageString[length+3] = checksum;
+    messageString[length+4] = '\0';
 
     //Free the remote 'content' string
     if (length > 0) free(content);
 
-    return messageString;
+    String *string = newString(messageString, length+4);
+    return string;
 }
 
 MessageType extractMessage(char *message, MessageDataRead *data) {

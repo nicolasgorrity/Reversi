@@ -7,7 +7,6 @@
 
 #include "datastruct.h"
 
-Coords* findBestMove(Board *board, Color playerColor);
 PlayableCell* findPlayableCells(Board *board, Color playerColor);
 int findSurroundedCellsArray(Board *board, int cell_x, int cell_y, int dir_h, int dir_v, Color playerColor, Color opponentColor);
 
@@ -17,5 +16,8 @@ short isCellXInBoard(Board *board, int cell_x);
 short isCellYInBoard(Board *board, int cell_y);
 short isCellInBoard(Board *board, int cell_x, int cell_y);
 
+void updateBoard(Board *board, Coords *newMove, Color playerColor);
+
+unsigned short getNumberOfRemainingMoves(Board *board, Color playerColor);
 
 #endif // PLAY_H_INCLUDED

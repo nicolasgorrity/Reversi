@@ -20,8 +20,8 @@ Coords* calculateScores(Board *board, unsigned int whiteCumulatedTime, unsigned 
     unsigned short blackBonus = ((blackCoins > whiteCoins) ? 100 : 0);
 
     ///Calculate the white score
-    unsigned short whiteScore = (whiteCoins/totalCoins)*100 + ((totalCumulatedTime-whiteCumulatedTime) / totalCumulatedTime)*100 + whiteBonus;
-    unsigned short blackScore = (blackCoins/totalCoins)*100 + ((totalCumulatedTime-blackCumulatedTime) / totalCumulatedTime)*100 + blackBonus;
+    unsigned short whiteScore = (float)((float)whiteCoins/(float)totalCoins)*100.0 + (float)(((float)totalCumulatedTime-(float)whiteCumulatedTime) / (float)(totalCumulatedTime))*100 + whiteBonus;
+    unsigned short blackScore = (float)((float)blackCoins/(float)totalCoins)*100.0 + (float)(((float)totalCumulatedTime-(float)blackCumulatedTime) / (float)(totalCumulatedTime))*100 + blackBonus;
 
     Coords *scores = (Coords*)malloc(sizeof(Coords));
     scores->x = whiteScore;

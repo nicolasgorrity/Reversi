@@ -1,5 +1,49 @@
 # depslib dependency file v1.0
-1511355538 source:/home/marylou/Documents/ING4/Reversi/game-master/main.c
+1512841939 source:/home/marylou/Documents/ING4/Reversi/game-master/main.c
+	"connection.h"
+	"message.h"
+	"play.h"
+	"display.h"
+
+1512836074 source:/home/marylou/Documents/ING4/Reversi/game-master/connection.c
+	"connection.h"
+
+1512833949 /home/marylou/Documents/ING4/Reversi/game-master/connection.h
 	<stdio.h>
+	<string.h>
+	<sys/socket.h>
+	<unistd.h>
+	<arpa/inet.h>
 	<stdlib.h>
+	"datastruct.h"
+
+1512848063 /home/marylou/Documents/ING4/Reversi/game-master/datastruct.h
+	<stdlib.h>
+
+1512835950 source:/home/marylou/Documents/ING4/Reversi/game-master/datastruct.c
+	"datastruct.h"
+	<stdio.h>
+
+1512823746 source:/home/marylou/Documents/ING4/Reversi/game-master/display.c
+	"display.h"
+
+1512823746 /home/marylou/Documents/ING4/Reversi/game-master/display.h
+	<stdio.h>
+	"datastruct.h"
+
+1512833401 /home/marylou/Documents/ING4/Reversi/game-master/message.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"datastruct.h"
+
+1512823746 /home/marylou/Documents/ING4/Reversi/game-master/play.h
+	<stdio.h>
+	"datastruct.h"
+
+1512842660 source:/home/marylou/Documents/ING4/Reversi/game-master/message.c
+	"message.h"
+
+1512823746 source:/home/marylou/Documents/ING4/Reversi/game-master/play.c
+	"play.h"
 

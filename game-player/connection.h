@@ -8,6 +8,8 @@
 #include<arpa/inet.h> //inet_addr
 #include<stdlib.h>//malloc
 
+#include "datastruct.h"
+
 
 /*
  *
@@ -27,7 +29,7 @@ char* readMessage(int socket);
 /*
  *
  */
-int writeMessage(int socket, char *message);
+int writeMessage(int socket, String *message);
 
 /*
  *

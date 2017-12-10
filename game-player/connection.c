@@ -50,11 +50,11 @@ char* readMessage(int socket)
 }
 
 
-int writeMessage(int socket, char *message)
+int writeMessage(int socket, String *message)
 {
-    if (write(socket, message, strlen(message)) < 0)
+    if (write(socket, message->text, message->length) < 0)
     {
-        printf("game-player : connection.c in function writeMessage() : write failed. Message was: %s", message);
+        printf("game-player : connection.c in function writeMessage() : write failed.\n");
         return -1;
     }
     return 0;
@@ -63,5 +63,6 @@ int writeMessage(int socket, char *message)
 
 int disconnect(int socket)
 {
+    printf("game-player stopping\n");
     return close(socket);
 }

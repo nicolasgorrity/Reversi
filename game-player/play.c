@@ -1,48 +1,5 @@
 #include "play.h"
 
-Coords* findBestMove(Board *board, Color playerColor) {
-    ///Get the chained list of playable cells
-    PlayableCell *playableCells = findPlayableCells(board, playerColor);
-
-    int cpt = 0;
-    PlayableCell *tmp = playableCells;
-    while (tmp!= NULL) {cpt++;tmp=tmp->next;} printf("Number of playable cells: %d\n",cpt);
-    ///Chose the best move
-    //For now, we simply send the first one
-    Coords* bestMove;
-    if (playableCells != NULL) {
-        bestMove = playableCells->cellCoords;
-    }
-    else {
-        bestMove = (Coords*)malloc(sizeof(Coords));
-        bestMove->x = USHRT_MAX;
-        bestMove->y = USHRT_MAX;
-    }
-
-    ///Copy its data into a Coords* data structure
-    Coords* bestMoveCopy = (Coords*)malloc(sizeof(Coords));
-    bestMoveCopy->x = bestMove->x;
-    bestMoveCopy->y = bestMove->y;
-
-    ///Free the list of playable cells
-    while (playableCells != NULL) {
-        PlayableCell *toDelete = playableCells;
-        playableCells = playableCells->next;
-        free(toDelete->cellCoords);
-        //Free the list of arrays
-        while (toDelete->opponentArrays != NULL) {
-            OpponentArray *toFree = toDelete->opponentArrays;
-            toDelete->opponentArrays = toDelete->opponentArrays->next;
-            free(toFree->direction);
-            free(toFree);
-        }
-        free(toDelete);
-    }
-
-    ///Return the coords of the best move
-    return bestMoveCopy;
-}
-
 PlayableCell* findPlayableCells(Board *board, Color playerColor) {
     int i,j;
     ///Create a chained list where we will store the data of all playable cells.
@@ -172,4 +129,91 @@ short isCellYInBoard(Board *board, int cell_y) {
 
 short isCellInBoard(Board *board, int cell_x, int cell_y) {
     return (isCellXInBoard(board, cell_x) && isCellYInBoard(board, cell_y));
+}
+
+void updateBoard(Board *board, Coords *newMove, Color playerColor) {
+    ///Check that the new move is inside the board
+    if (!isCellInBoard(board, newMove->x, newMove->y)) {
+        printf("Move not possible for %s player\n", (playerColor == WHITE ? "White" : "Black"));
+        return;
+    }
+
+    ///Find the opponent color
+    Color opponentColor = getOpponentColor(playerColor);
+    if (opponentColor == (Color)-1) {
+        perror("game-player : play.c : updateBoard() :\nError: Couldn't find the opponent color.\n");
+        return;
+    }
+
+    ///The cell has to be empty
+    if (board->state[newMove->y][newMove->x] == EMPTY) {
+        ///The cell has to be adjacent to an opponent cell
+        int dir_v, dir_h;
+        for (dir_v=-1; dir_v<=1; dir_v++) {
+            //Be sure that we are not checking outside the board
+            if (isCellYInBoard(board, newMove->y+dir_v)) {
+                for (dir_h=-1; dir_h<=1; dir_h++) {
+                    //Be sure that we are not checking outside the board
+                    if (isCellXInBoard(board, newMove->x+dir_h)) {
+                        if (board->state[newMove->y+dir_v][newMove->x+dir_h] == opponentColor) {
+                            ///Following the same direction, we should find several (min 1) opponent cells, ended by a cell belonging to the current player
+                            int surroundedArraySize = findSurroundedCellsArray(board, newMove->x+dir_h, newMove->y+dir_v, dir_h, dir_v, playerColor, opponentColor);
+                            if (surroundedArraySize > 0) { //Array of 1+ opponent cells ended by a current player's cell: this is a playable move
+                                ///This array is taken from the opponent
+                                int cpt = 0, r_i=0, r_j=0;
+                                for (cpt = 0; cpt<surroundedArraySize+1; cpt++) {
+                                    board->state[newMove->y+r_i][newMove->x+r_j] = playerColor;
+                                    r_i += dir_v;
+                                    r_j += dir_h;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+unsigned short getNumberOfRemainingMoves(Board *board, Color playerColor) {
+    int i,j;
+    int numberOfPlayableCells = 0;
+
+    ///Find the opponent color
+    Color opponentColor = getOpponentColor(playerColor);
+    if (opponentColor == (Color)-1) {
+        perror("game-player : play.c : getNumberOfRemainingMoves() :\nError: Couldn't find the opponent color.\n");
+        return 0;
+    }
+
+    ///Browse the board
+    for (i=0; i<board->dimensions->y; i++) {
+        for (j=0; j<board->dimensions->x; j++) {
+            ///The cell has to be empty
+            if (board->state[i][j] == EMPTY) {
+                char isPlayable=0;
+                ///The cell has to be adjacent to an opponent cell
+                int dir_v, dir_h;
+                for (dir_v=-1; dir_v<=1; dir_v++) {
+                    //Be sure that we are not checking outside the board
+                    if (isCellYInBoard(board, i+dir_v)) {
+                        for (dir_h=-1; dir_h<=1; dir_h++) {
+                            //Be sure that we are not checking outside the board
+                            if (isCellXInBoard(board, j+dir_h)) {
+                                if (board->state[i+dir_v][j+dir_h] == opponentColor) {
+                                    ///Following the same direction, we should find several (min 1) opponent cells, ended by a cell belonging to the current player
+                                    int surroundedArraySize = findSurroundedCellsArray(board, j+dir_h, i+dir_v, dir_h, dir_v, playerColor, opponentColor);
+                                    if (surroundedArraySize > 0) { //Array of 1+ opponent cells ended by a current player's cell: this is a playable move
+                                        isPlayable = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                numberOfPlayableCells += isPlayable;
+            }
+        }
+    }
+    return numberOfPlayableCells;
 }

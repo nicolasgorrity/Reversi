@@ -43,7 +43,7 @@ int writeMessage(int socket, String *message);
 /*
  *
  */
-int disconnect(int socket1, int socket2, int socketC, int sock1, int sock2, int sock3);
+int disconnect(int socket1, int sock1, int sock2, int sock3);
 
 
 #endif // CONNECTION_H_INCLUDED

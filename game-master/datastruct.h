@@ -26,7 +26,6 @@ void freeBoard(Board *board);
 
 Board* allocateInitialBoard(unsigned short sizeX, unsigned short sizeY);
 
-
 typedef struct StringStruct {
     char *text;
     unsigned short length;

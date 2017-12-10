@@ -3,7 +3,6 @@
 void displayAllData(Board *board, PlayersData *playersData) {
     displayPlayersData(playersData);
     displayBoard(board);
-    displayCommands();
 }
 
 void displayBoard(Board *board) {
@@ -20,6 +19,7 @@ void displayBoard(Board *board) {
         }
         printf("\n");
     }
+    printf("\n");
 
 }
 
@@ -31,10 +31,6 @@ void displayPlayersData(PlayersData *playersData) {
     printf("%-*s%-*s%-*s\n", leftTab, "Last move:", spaceTab, "", spaceTab, "");
     printf("%-*s%-*d%-*d\n", leftTab, "Points:", spaceTab, playersData->dataBP->points, spaceTab, playersData->dataWP->points);
     printf("%-*s%-*d%-*d\n", leftTab, "Time:", spaceTab, playersData->dataBP->timer, spaceTab, playersData->dataWP->timer);
-}
-
-void displayCommands() {
-    printf("Commands: (s) step by step mode\n%10s(c) continuous mode\n%10s(ch) change board size\n%10s(q) quit\n%10s(r) restart\n","","","","");
 }
 
 char colorToSymbol(Color color) {

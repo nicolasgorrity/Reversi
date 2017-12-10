@@ -22,11 +22,19 @@ typedef struct BoardStructure {
     Color **state;
 } Board;
 void freeBoard(Board *board);
+Board* copyBoard(Board *board);
+
+typedef struct StringStruct {
+    char *text;
+    unsigned short length;
+} String;
+String* newString(char *text, unsigned short length);
+void freeString(String *mystring);
 
 //Data to send to a message -> structure can be different according to the message, so we use a union
 typedef union DataToSend {
     Coords *newMoveCoords; //For NEW_MOVE
-    char *playerName;      //For CONNECT
+    String *playerName;      //For CONNECT
 } MessageDataSend;
 
 //Data to read from a message -> structure can be different according to the message, so we use a union
@@ -50,5 +58,20 @@ typedef struct PlayableCellStruct {
     OpponentArray *opponentArrays;
     struct PlayableCellStruct *next;
 } PlayableCell;
+void freePlayableCell(PlayableCell *toDelete);
+void freePlayableCells(PlayableCell *playableCells);
+
+//Player turns single chained list for IA
+typedef struct PlayerTurnStruct {
+    Coords* cellCoords;
+    Color player;
+    struct PlayerTurnStruct *next;
+} PlayerTurn;
+
+//Node structure for IA
+typedef struct NodeStruct {
+    Coords *cellCoords;
+    int evaluation;
+} Node;
 
 #endif // DATASTRUCT_H_INCLUDED

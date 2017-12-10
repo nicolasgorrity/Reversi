@@ -7,7 +7,7 @@
 
 #include "datastruct.h"
 
-char *createMessage(MessageType message, MessageDataSend *data);
+String *createMessage(MessageType message, MessageDataSend *data);
 MessageType extractMessage(char *message, MessageDataRead *data);
 Color charToCellColor(unsigned char cellState);
 

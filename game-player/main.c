@@ -1,6 +1,6 @@
 #include "connection.h"
 #include "message.h"
-#include "play.h"
+#include "artificial_intelligence.h"
 #include "display.h"
 
 int main(int argc, char *argv[])
@@ -15,12 +15,15 @@ int main(int argc, char *argv[])
 
     ///Send Connect message
     MessageDataSend *dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
-    dataSend->playerName = name;
-    char *connectMessage = createMessage(CONNECT, dataSend);
+    dataSend->playerName = newString(name, 7);
+    String *connectMessage = createMessage(CONNECT, dataSend);
+    free(dataSend);
     if (writeMessage(socket, connectMessage) < 0) {
         perror("game-player : main.c : Could not send CONNECT message\n");
+        freeString(connectMessage);
         return disconnect(socket);
     }
+    freeString(connectMessage);
     printf("Sent CONNECT message to game-master\n");
 
     ///Wait for OK message
@@ -28,18 +31,24 @@ int main(int argc, char *argv[])
     MessageDataRead *dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
     if (extractMessage(okMessage, dataRead) != INIT_OK) {
         perror("game-player : main.c : Could not read OK message\n");
+        free(okMessage);
         return disconnect(socket);
     }
+    free(okMessage);
     Color playerColor = dataRead->playerColor;
+    free(dataRead);
     printf("Received OK message from game-master\n");
 
     ///Game loop
     while (1) {
         ///Wait for NEXT_TURN message
         char *nextTurnMessage = readMessage(socket);
+        dataRead = (MessageDataRead*)malloc(sizeof(MessageDataRead));
         MessageType result = extractMessage(nextTurnMessage, dataRead);
+        free(nextTurnMessage);
         if (result == NEXT_TURN) {
             Board *board = dataRead->board;
+            free(dataRead);
             displayBoard(board);
 
             ///Find the best move
@@ -47,20 +56,23 @@ int main(int argc, char *argv[])
             freeBoard(board);
 printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
             ///Send NEW_MOVE message
-            char *messageToSend;
+            dataSend = (MessageDataSend*)malloc(sizeof(MessageDataSend));
             dataSend->newMoveCoords = bestMove;
-            messageToSend = createMessage(NEW_MOVE, dataSend);
+            String *messageToSend = createMessage(NEW_MOVE, dataSend);
             free(dataSend->newMoveCoords);
-
+            free(dataSend);
             if (writeMessage(socket, messageToSend) < 0) {
                 perror("game-player : main.c : Could not send the new move message\n");
+                freeString(messageToSend);
                 return disconnect(socket);
             }
+            freeString(messageToSend);
             printf("Sent NEW_MOVE message to game-master\n");
 
             ///Wait for OK or NOK message
             okMessage = readMessage(socket);
             result = extractMessage(okMessage, NULL);
+            free(okMessage);
             if (result != OK && result != NOK) {
                 if (result == END) printf("game-player : Received END message: disconnecting...\n");
                 else perror("game-player : main.c : Could not read OK or NOK message\n");
@@ -69,13 +81,12 @@ printf("Best move found at location x=%d and y=%d\n",bestMove->x, bestMove->y);
             printf("Received %s message from game-master\n",result == OK ? "OK" : "NOK");
         }
         else {
+            free(dataRead);
             if (result == END) printf("game-player : Received END message: disconnecting...\n");
             else printf("game-player : main.c : Expected message of type NEXT_TURN\n");
             return disconnect(socket);
         }
     }
 
-    int ret = disconnect(socket);
-    printf("game-player stopping\n");
-    return ret;
+    return disconnect(socket);
 }
